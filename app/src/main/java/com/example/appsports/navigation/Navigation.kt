@@ -5,14 +5,19 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.Alignment
+import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.appsports.ui.login.LoginScreen
+import com.example.appsports.ui.backend.UsersCrudScreen
+import com.example.appsports.ui.backend.AdminScreen
+
 
 sealed class Screen(val route: String) {
     object Login : Screen("login")
-    object Home : Screen("home/{username}")
+    object Admin : Screen("adminScreen/{nombre}")
+    object User : Screen("usuarioScreen/{nombre}")
 }
 
 @Composable
@@ -23,38 +28,38 @@ fun NavigationRoot() {
         navController = navController,
         startDestination = Screen.Login.route
     ) {
+
         composable(Screen.Login.route) {
             LoginScreen(navController = navController)
         }
 
-        composable(Screen.Home.route) { backStackEntry ->
-            val username = backStackEntry.arguments?.getString("username") ?: "Invitado"
-            HomeScreen(username)
+        // ADMIN
+        composable(Screen.Admin.route) {
+            val nombre = it.arguments?.getString("nombre") ?: ""
+            AdminScreen(navController, nombre)
         }
+
+        // USER
+        composable("usuarioScreen/{nombre}") { backStackEntry ->
+            val nombre = backStackEntry.arguments?.getString("nombre") ?: ""
+            UserScreen(navController, nombre)
+        }
+
+        composable("crudUsuarios") {
+            UsersCrudScreen()
+        }
+
+
     }
 }
+
+
 
 @Composable
-fun HomeScreen(username: String) {
-    Surface(modifier = Modifier.fillMaxSize()) {
-        Box(
-            modifier = Modifier.fillMaxSize(),
-            contentAlignment = Alignment.Center
-        ) {
-            Text(
-                text = "Bienvenido, $username",
-                style = MaterialTheme.typography.headlineMedium
-            )
-        }
+fun UserScreen(navController: NavHostController, nombre: String){
+    Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center){
+        Text("Bienvenido/a Usuario!: $nombre")
     }
 }
 
 
-
-data class User (
-    val id: Int,
-    val nombre: String,
-    val email: String,
-    val password: String,
-    val rol: String
-)

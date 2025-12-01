@@ -140,7 +140,14 @@ fun LoginScreen(navController: NavHostController) {
                 onClick = {
                     try {
                         val user = login.comprobarLogin(username, password)
-                        navController.navigate("home/${user.nombre ?: "Invitado"}")
+
+                        val ruta = when (user.rol.lowercase()){
+                            "admin" -> "adminScreen/${user.nombre}"
+                            "usuario" -> "usuarioScreen/${user.nombre}"
+                            else -> "userScreen/${user.nombre}"
+                        }
+
+                        navController.navigate(ruta)
                     } catch (e: IllegalArgumentException) {
                         error = e.message ?: "Usuario o contraseña incorrectos"
                     }
